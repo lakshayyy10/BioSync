@@ -1,4 +1,3 @@
-// page.tsx
 "use client"
 import { useState, useEffect } from 'react';
 import Temperature from '../components/temp';
@@ -9,7 +8,7 @@ import MetricsOverTime from '../components/metrics';
 export default function HealthDashboard() {
   const [metrics, setMetrics] = useState({
     temperature: { value: 0, change: 0 },
-    humidity: { value: 0, change: 0 },
+    heartrate: { value: 0, change: 0 },
     spo2: { value: 0, change: 0 }
   });
   const [metricsHistory, setMetricsHistory] = useState([]);
@@ -25,20 +24,18 @@ export default function HealthDashboard() {
       try {
         const data = JSON.parse(event.data);
         
-        // Update current metrics and calculate changes
         setMetrics(prev => {
           const calculateChange = (oldVal, newVal) => {
             return oldVal === 0 ? 0 : ((newVal - oldVal) / oldVal * 100).toFixed(1);
           };
-
           return {
             temperature: {
               value: data.temperature,
               change: calculateChange(prev.temperature.value, data.temperature)
             },
-            humidity: {
-              value: data.humidity,
-              change: calculateChange(prev.humidity.value, data.humidity)
+            heartrate: {
+              value: data.heartrate,
+              change: calculateChange(prev.heartrate.value, data.heartrate)
             },
             spo2: {
               value: data.spo2,
@@ -47,7 +44,6 @@ export default function HealthDashboard() {
           };
         });
 
-        // Update metrics history
         setMetricsHistory(prev => {
           const timestamp = new Date().toLocaleTimeString('en-US', { 
             hour12: true,
@@ -59,11 +55,10 @@ export default function HealthDashboard() {
           const newData = [...prev, {
             timestamp,
             temperature: data.temperature,
-            humidity: data.humidity,
+            heartrate: data.heart_rate,
             spo2: data.spo2
           }];
           
-          // Keep last 60 readings
           return newData.slice(-60);
         });
       } catch (error) {
@@ -74,7 +69,6 @@ export default function HealthDashboard() {
     ws.onerror = (error) => {
       console.error('WebSocket error:', error);
     };
-
     ws.onclose = () => {
       console.log('Disconnected from WebSocket server');
     };
@@ -85,11 +79,11 @@ export default function HealthDashboard() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4">
+    <div className="min-h-screen bg-white p-4">
       <div className="flex justify-between items-center mb-4">
         <div>
-          <h1 className="text-xl font-bold text-gray-800">Health Monitoring Dashboard</h1>
-          <p className="text-sm text-gray-900">Real-time health metrics</p>
+          <h1 className="text-xl font-bold text-gray-900">Health Monitoring Dashboard</h1>
+          <p className="text-sm text-gray-900">Real-time health metrics with AI predictions</p>
         </div>
         <div className="flex items-center text-blue-900">
           <span className="mr-1">Live Monitoring</span>
@@ -99,13 +93,16 @@ export default function HealthDashboard() {
         </div>
       </div>
       
-      <div className="grid grid-cols-3 gap-4 mb-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
         <Temperature value={metrics.temperature.value} change={metrics.temperature.change} />
-        <Humidity value={metrics.humidity.value} change={metrics.humidity.change} />
+        <Humidity value={metrics.heartrate.value} change={metrics.heartrate.change} />
         <SpO2 value={metrics.spo2.value} change={metrics.spo2.change} />
       </div>
       
-      <MetricsOverTime data={metricsHistory} />
+      <div className="bg-white rounded-lg p-4 shadow-lg">
+        <h2 className="text-lg font-semibold text-gray-100 mb-4">Metrics Over Time</h2>
+        <MetricsOverTime data={metricsHistory} />
+      </div>
     </div>
   );
 }

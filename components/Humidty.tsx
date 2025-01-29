@@ -4,11 +4,11 @@ import React from 'react';
 
 const Humidity = ({ value, change }) => {
   return (
-    <div className="bg-white rounded-lg p-3 shadow-sm">
+    <div className="bg-white rounded-lg p-8 shadow-sm">
       <div className="flex justify-between items-center">
         <div className="flex items-center">
           <span className="text-blue-500 mr-2">💧</span>
-          <span className="text-gray-600">Humidity</span>
+          <span className="text-gray-600">Heart Rate</span>
         </div>
         <span className={`text-xs ${change >= 0 ? 'text-green-500' : 'text-red-500'}`}>
           {change}%

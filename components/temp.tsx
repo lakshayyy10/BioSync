@@ -3,7 +3,7 @@ import React from 'react';
 
 const Temperature = ({ value, change }) => {
   return (
-    <div className="bg-white rounded-lg p-3 shadow-sm">
+    <div className="bg-white rounded-lg p-8 shadow-sm">
       <div className="flex justify-between items-center">
         <div className="flex items-center">
           <span className="text-red-500 mr-2">🌡️</span>
