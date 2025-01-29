@@ -14,7 +14,7 @@ remote_socket = context.socket(zmq.PUB)
 
 # Bind/connect sockets
 local_socket.bind("tcp://*:5555")
-remote_socket.connect("tcp://192.186.101.60:5556")  # Connect to remote IP
+remote_socket.connect("tcp://192.168.61.23:5556")  # Connect to remote IP
 
 # Initialize DHT11 sensor
 try:
