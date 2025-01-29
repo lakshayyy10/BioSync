@@ -7,8 +7,14 @@ import random
 
 # Initialize ZMQ publisher
 context = zmq.Context()
-socket = context.socket(zmq.PUB)
-socket.bind("tcp://*:5555")
+
+# Create two publisher sockets
+local_socket = context.socket(zmq.PUB)
+remote_socket = context.socket(zmq.PUB)
+
+# Bind/connect sockets
+local_socket.bind("tcp://*:5555")
+remote_socket.connect("tcp://192.186.101.60:5555")  # Connect to remote IP
 
 # Initialize DHT11 sensor
 try:
@@ -33,6 +39,11 @@ def generate_simulated_data():
     spo2 = random.uniform(95, 100)  # Normal SpO2 range
     return heart_rate, spo2
 
+def send_message(socket, topic, message):
+    """Helper function to send messages with topic."""
+    socket.send_string(topic, zmq.SNDMORE)
+    socket.send_string(message)
+
 def main():
     print("Starting sensor readings...")
     try:
@@ -51,10 +62,12 @@ def main():
             }
             
             message = json.dumps(data)
-            socket.send_string("health_metrics", zmq.SNDMORE)
-            socket.send_string(message)
             
-            print(f"Sent: {message}")
+            # Send to both local and remote sockets
+            send_message(local_socket, "health_metrics", message)
+            send_message(remote_socket, "health_metrics", message)
+            
+            print(f"Sent locally and to remote IP: {message}")
             time.sleep(1)
             
     except KeyboardInterrupt:
@@ -62,7 +75,8 @@ def main():
     finally:
         if dht_device:
             dht_device.exit()
-        socket.close()
+        local_socket.close()
+        remote_socket.close()
         context.term()
 
 if __name__ == "__main__":
