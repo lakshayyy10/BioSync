@@ -24,14 +24,18 @@ except Exception as e:
     dht_device = None
 
 def read_dht11():
-    """Read temperature from DHT11."""
+    """Read temperature from DHT11, fallback to fake data if error occurs."""
     if dht_device is None:
-        return None
+        return round(random.uniform(20, 35), 1)  # Simulated temperature
+    
     try:
-        return dht_device.temperature
+        temp = dht_device.temperature
+        if temp is None:
+            raise ValueError("Invalid reading")
+        return temp
     except Exception as e:
         print(f"DHT11 read error: {e}")
-        return None
+        return round(random.uniform(20, 35), 1)  # Simulated temperature
 
 def generate_simulated_data():
     """Generate fake heart rate and SpO2 data within realistic ranges."""
@@ -48,14 +52,14 @@ def main():
     print("Starting sensor readings...")
     try:
         while True:
-            # Get real temperature from DHT11
+            # Get real or fake temperature
             temperature = read_dht11()
             
             # Generate simulated heart rate and SpO2
             heart_rate, spo2 = generate_simulated_data()
             
             data = {
-                "temperature": temperature if temperature else 0,
+                "temperature": temperature,
                 "heartrate": round(heart_rate, 1),
                 "spo2": round(spo2, 1),
                 "timestamp": time.strftime("%H:%M:%S")
@@ -68,7 +72,7 @@ def main():
             send_message(remote_socket, "health_metrics", message)
             
             print(f"Sent locally and to remote IP: {message}")
-            time.sleep(1)
+            time.sleep(2.5)  # Increased delay for better stability
             
     except KeyboardInterrupt:
         print("\nStopping sensor readings...")
@@ -81,3 +85,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
