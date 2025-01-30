@@ -45,7 +45,7 @@ socket = context.socket(zmq.PUB)
 socket.bind("tcp://*:5555")
 
 # Initialize sensors
-dht_device = adafruit_dht.DHT11(board.D11)
+dht_device = adafruit_dht.DHT11(board.D7)
 max30100 = MAX30100()
 
 def read_dht11():
