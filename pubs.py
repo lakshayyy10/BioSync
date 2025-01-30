@@ -26,7 +26,7 @@ except Exception as e:
 def read_dht11():
     """Read temperature from DHT11, fallback to fake data if error occurs."""
     if dht_device is None:
-        return round(random.uniform(20, 35), 1)  # Simulated temperature
+        return round(random.uniform(27, 36), 1)  # Simulated temperature
     
     try:
         temp = dht_device.temperature
