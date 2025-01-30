@@ -6,9 +6,13 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "python": "python3 pubs.py",
+    "node-web": "node web.js",
+    "dev:all": "concurrently \"npm run dev\" \"npm run python\" \"npm run node-web\""
   },
   "dependencies": {
+    "concurrently": "^8.2.2",
     "next": "15.1.6",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
